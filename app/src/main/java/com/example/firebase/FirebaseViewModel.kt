@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class Tenista(
+data class Jugador(
     val nombre: String = "",
     val edad: Int = 0,
     val grandSlams: Int = 0
@@ -26,16 +26,16 @@ class FirebaseViewModel : ViewModel() {
     private val _newMessage = MutableStateFlow("")
     val newMessage = _newMessage.asStateFlow()
 
-    // Para Firestore (tenistas)
+    // Para Firestore (Jugadores)
     private val firestoreDb = Firebase.firestore
-    private val _tenistas = MutableStateFlow<List<Tenista>>(emptyList())
-    val tenistas = _tenistas.asStateFlow()
+    private val _Jugadores = MutableStateFlow<List<Jugador>>(emptyList())
+    val Jugadores = _Jugadores.asStateFlow()
 
     init {
         // Escuchar mensajes de Realtime Database
         setupRealtimeDatabaseListener()
 
-        // Obtener tenistas de Firestore
+        // Obtener Jugadores de Firestore
         setupFirestoreListener()
     }
 
@@ -56,7 +56,7 @@ class FirebaseViewModel : ViewModel() {
     }
 
     private fun setupFirestoreListener() {
-        firestoreDb.collection("Tenistas").document("Tenistas")
+        firestoreDb.collection("Jugadores").document("Jugadores")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     // Manejar error
@@ -64,29 +64,29 @@ class FirebaseViewModel : ViewModel() {
                 }
 
                 snapshot?.let { document ->
-                    val tenistasList = mutableListOf<Tenista>()
-                    // Si el documento contiene un array de tenistas
-                    val tenistasArray = document.get("tenistas") as? List<Map<String, Any>>
-                    tenistasArray?.forEach { tenistaData ->
-                        tenistasList.add(
-                            Tenista(
-                                nombre = tenistaData["Nombre"] as? String ?: "",
-                                edad = (tenistaData["Edad"] as? Long)?.toInt() ?: 0,
-                                grandSlams = (tenistaData["Grand Slams"] as? Long)?.toInt() ?: 0
+                    val JugadoresList = mutableListOf<Jugador>()
+                    // Si el documento contiene un array de Jugadores
+                    val JugadoresArray = document.get("Jugadores") as? List<Map<String, Any>>
+                    JugadoresArray?.forEach { JugadorData ->
+                        JugadoresList.add(
+                            Jugador(
+                                nombre = JugadorData["Nombre"] as? String ?: "",
+                                edad = (JugadorData["Edad"] as? Long)?.toInt() ?: 0,
+                                grandSlams = (JugadorData["Grand Slams"] as? Long)?.toInt() ?: 0
                             )
                         )
                     }
                     // O si los campos están directamente en el documento
-                    if (tenistasList.isEmpty()) {
+                    if (JugadoresList.isEmpty()) {
                         val nombre = document.getString("Nombre") ?: ""
                         val edad = document.getLong("Edad")?.toInt() ?: 0
                         val grandSlams = document.getLong("Grand Slams")?.toInt() ?: 0
                         if (nombre.isNotEmpty()) {
-                            tenistasList.add(Tenista(nombre, edad, grandSlams))
+                            JugadoresList.add(Jugador(nombre, edad, grandSlams))
                         }
                     }
 
-                    _tenistas.value = tenistasList
+                    _Jugadores.value = JugadoresList
                 }
             }
     }
