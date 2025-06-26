@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
 fun FirebaseApp(viewModel: FirebaseViewModel) {
     val messages by viewModel.messages.collectAsState()
     val newMessage by viewModel.newMessage.collectAsState()
-    val tenistas by viewModel.tenistas.collectAsState()
+    val jugadores by viewModel.jugadores.collectAsState()
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -46,24 +46,24 @@ fun FirebaseApp(viewModel: FirebaseViewModel) {
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            // Sección de Tenistas (Firestore)
+            // Sección de jugadores (Firestore)
             Text(
-                text = "Tenistas",
+                text = "jugadores",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            if (tenistas.isEmpty()) {
-                Text("No hay tenistas registrados")
+            if (jugadores.isEmpty()) {
+                Text("No hay jugadores registrados")
             } else {
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
                         .padding(bottom = 16.dp)
                 ) {
-                    items(tenistas) { tenista ->
-                        TenistaCard(tenista = tenista)
+                    items(jugadores) { jugador ->
+                        jugadorCard(jugador = jugador)
                     }
                 }
             }
@@ -107,7 +107,7 @@ fun FirebaseApp(viewModel: FirebaseViewModel) {
 }
 
 @Composable
-fun TenistaCard(tenista: Tenista) {
+fun jugadorCard(jugador: jugador) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,13 +117,13 @@ fun TenistaCard(tenista: Tenista) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = tenista.nombre,
+                text = jugador.nombre,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Edad: ${tenista.edad}")
-            Text(text = "Grand Slams: ${tenista.grandSlams}")
+            Text(text = "Edad: ${jugador.edad}")
+            Text(text = "Grand Slams: ${jugador.grandSlams}")
         }
     }
 }
