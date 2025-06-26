@@ -4,23 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.firebase.ui.theme.FireBaseTheme
 
 class MainActivity : ComponentActivity() {
@@ -41,15 +37,51 @@ class MainActivity : ComponentActivity() {
 fun FirebaseApp(viewModel: FirebaseViewModel) {
     val messages by viewModel.messages.collectAsState()
     val newMessage by viewModel.newMessage.collectAsState()
+    val tenistas by viewModel.tenistas.collectAsState()
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(16.dp)
+                .fillMaxSize()
         ) {
-            // Lista de mensajes
-            LazyColumn(modifier = Modifier.weight(1f)) {
+            // Sección de Tenistas (Firestore)
+            Text(
+                text = "Tenistas",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            if (tenistas.isEmpty()) {
+                Text("No hay tenistas registrados")
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(bottom = 16.dp)
+                ) {
+                    items(tenistas) { tenista ->
+                        TenistaCard(tenista = tenista)
+                    }
+                }
+            }
+
+            // Divider
+            Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // Sección de Mensajes (Realtime Database)
+            Text(
+                text = "Mensajes",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            LazyColumn(
+                modifier = Modifier.weight(1f)
+            ) {
                 items(messages) { message ->
                     Text(text = message, modifier = Modifier.padding(8.dp))
                 }
@@ -70,6 +102,28 @@ fun FirebaseApp(viewModel: FirebaseViewModel) {
             ) {
                 Text("Enviar mensaje")
             }
+        }
+    }
+}
+
+@Composable
+fun TenistaCard(tenista: Tenista) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = tenista.nombre,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = "Edad: ${tenista.edad}")
+            Text(text = "Grand Slams: ${tenista.grandSlams}")
         }
     }
 }
